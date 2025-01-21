@@ -12,6 +12,34 @@ def cosine_similarity(vector_a: np.array, vector_b: np.array) -> float:
     norm_b = np.linalg.norm(vector_b)
     return dot_product / (norm_a * norm_b)
 
+def l1_norm(vector_a: np.array, vector_b: np.array) -> float:
+    """
+    Compute the L1 norm (Manhattan distance) between two vectors.
+    Helpful for cases where there are large number of independent
+    high dimensions.
+
+    Parameters:
+    - vector1: numpy array
+    - vector2: numpy array
+
+    Returns:
+    - L1 norm (float)
+    """
+    return np.sum(np.abs(vector_a - vector_b))
+
+def l2_norm(vector_a: np.array, vector_b: np.array) -> float:
+    """
+    Compute the Euclidean distance (L2 norm) between two vectors.
+
+    Parameters:
+    - vector1: numpy array
+    - vector2: numpy array
+
+    Returns:
+    - Euclidean distance (float)
+    """
+    return np.sqrt(np.sum((vector_a - vector_b)**2))
+
 
 class VectorDatabase:
     def __init__(self, embedding_model: EmbeddingModel = None):
@@ -31,7 +59,9 @@ class VectorDatabase:
             (key, distance_measure(query_vector, vector))
             for key, vector in self.vectors.items()
         ]
-        return sorted(scores, key=lambda x: x[1], reverse=True)[:k]
+        return sorted(scores, key=lambda x: x[1], reverse=True)[:k] \
+            if distance_measure == cosine_similarity \
+            else sorted(scores, key=lambda x: x[1])[:k]
 
     def search_by_text(
         self,
